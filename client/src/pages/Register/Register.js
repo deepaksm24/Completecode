@@ -1,12 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Registeruser } from "../../api/users";
+import { message } from "antd";
 
 const Register = () => {
-  const handleSubmit = (values) => {
-    // Handle form submission logic here
-    console.log(values);
+  const navigate = useNavigate()
+
+  const handleSubmit = async (values) => {
+    const response = await Registeruser(values);
+    if (response.success) {
+
+      message.success(response.message);
+      navigate("/");
+    }else {
+      message.error(response.message);
+    }
   };
 
   const formik = useFormik({
@@ -18,15 +28,26 @@ const Register = () => {
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
-      email: Yup.string().email("Invalid email address").required("Email is required"),
-      password: Yup.string().required("Password is required"),
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      password: Yup.string()
+        .required("Password is required")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+          "Password must contain at least 8 characters, one lowercase letter, one uppercase letter, and one number"
+        ),
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Confirm Password is required"),
     }),
     onSubmit: handleSubmit,
   });
-
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/");
+    }
+  }, []);
   return (
     <section className="vh-100 gradient-custom">
       <div className="container py-5 h-100">

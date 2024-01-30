@@ -15,7 +15,17 @@ function App() {
 
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<NewProject />} />
+          {/* <Route path="/" element={<NewProject />} /> */}
+
+          <Route
+            path="/"
+            element={
+              <ProtecdRoute>
+                <NewProject />
+              </ProtecdRoute>
+            }
+          />
+
           <Route path ="/lorem" element ={<Home/>} />
           <Route path="/dashboard" element={<Homepage/>} />
           <Route path ="/login" element={<Login/>}/>

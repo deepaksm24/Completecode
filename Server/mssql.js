@@ -16,7 +16,7 @@ async function connectToDatabase() {
     console.log('Connected to SQL Server');
   } catch (err) {
     console.error('Error connecting to SQL Server:', err);
-    throw err; // Rethrow the error to handle it in the calling code
+    throw err;
   }
 }
 
@@ -24,7 +24,6 @@ async function findUserByEmail(email) {
   try {
     await connectToDatabase();
 
-    // Modify the SQL query based on your actual Users table schema
     const result = await sql.query`SELECT * FROM Users WHERE email = ${email}`;
 
     if (result.recordset.length > 0) {
@@ -37,7 +36,54 @@ async function findUserByEmail(email) {
     }
   } catch (err) {
     console.error('Error finding user by email:', err);
-    throw err; // Rethrow the error to handle it in the calling code
+    throw err;
+  } finally {
+    await sql.close();
+    console.log('Disconnected from SQL Server');
+  }
+}
+async function findUserByuserId(userId) {
+  try {
+    await connectToDatabase();
+
+    const result = await sql.query`SELECT * FROM Users WHERE userId = ${userId}`;
+
+    if (result.recordset.length > 0) {
+      const user = result.recordset[0];
+      console.log('User found:', user);
+      return user;
+    } else {
+      console.log('User not found');
+      return null;
+    }
+  } catch (err) {
+    console.error('Error finding user by email:', err);
+    throw err;
+  } finally {
+    await sql.close();
+    console.log('Disconnected from SQL Server');
+  }
+}
+async function addUser(newUser) {
+  try {
+    await connectToDatabase();
+
+    // Insert a new user into the Users table
+    const result = await sql.query`
+      INSERT INTO Users (email, password, name)
+      VALUES (${newUser.email}, ${newUser.password}, ${newUser.name})
+    `;
+
+    if (result.rowsAffected > 0) {
+      console.log('User added successfully');
+      return true;
+    } else {
+      console.log('Failed to add user');
+      return false;
+    }
+  } catch (err) {
+    console.error('Error adding user:', err);
+    throw err;
   } finally {
     await sql.close();
     console.log('Disconnected from SQL Server');
@@ -47,4 +93,6 @@ async function findUserByEmail(email) {
 module.exports = {
   connectToDatabase,
   findUserByEmail,
+  addUser,
+  findUserByuserId
 };
