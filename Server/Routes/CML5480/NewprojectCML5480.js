@@ -3,12 +3,14 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const xml2js = require('xml2js');
+const authMiddleware = require("../../middleware/authMiddleware");
+const { findUserByEmail, addUser,findUserByuserId,addUserfile } = require("../../mssql"); // Adjust the path based on your file structure
 
-router.post('/', async (req, res) => {
+router.post('/',authMiddleware, async (req, res) => {
   try {
     const formData = req.body;
-    //console.log('Received form data:', formData);
-
+    //console.log('Received user ID:', formData.userId);
+    console.log('Received user ID:', formData.userId,"req",req.body.userId);
     // Original XML file path
     const originalFilePath = 'D:\\P2_Lorem_l5x\\Completecode\\Server\\L5X_format\\CL5480\\CL5480.L5X';
 
@@ -17,7 +19,7 @@ router.post('/', async (req, res) => {
 
     // Parse the XML data
     const parser = new xml2js.Parser();
-    parser.parseString(xmlData, (err, result) => {
+    parser.parseString(xmlData, async (err, result) => {
       if (err) {
         console.error('Error parsing XML:', err);
         res.status(500).send('Internal Server Error');
@@ -72,23 +74,48 @@ router.post('/', async (req, res) => {
       if (formData.Major) {
         moduleAttributes.Major = formData.Major;
       }
+      try {
+        const uploadfile = await addUserfile({
+          userId: formData.userId,
+          filename: formData.Name || 'DefaultFileName',
+          timestamp: new Date(),
+          fileContent: JSON.stringify(result), // Store the parsed JavaScript object as a JSON string
+        });
 
+        if (!uploadfile) {
+          return res.send({
+            success: false,
+            message: "User File not Added",
+          });
+        }
+        // Send a response back to the client
+        res.send({
+          success: true,
+          message: "User Files successfully",
+          // data: userWithoutPassword,
+        });
+      } catch (error) {
+        console.error('Error adding user file to the database:', error);
+        res.status(500).send('Internal Server Error');
+      }
+        // Send a response back to the client
+      
       // Use xml2js.Builder to convert the modified result back to XML
-      const builder = new xml2js.Builder();
-      const xmlOutput = builder.buildObject(result);
+      // const builder = new xml2js.Builder();
+      // const xmlOutput = builder.buildObject(result);
 
-      // Save the XML output as a string
-      const resultString = xmlOutput;
+      // // Save the XML output as a string
+      // const resultString = xmlOutput;
 
-      // New XML file path
-      const newFilePath = path.join(path.dirname(originalFilePath), `Modified_${formData.Name || 'DefaultFileName'}.L5X`);
+      // // New XML file path
+      // const newFilePath = path.join(path.dirname(originalFilePath), `Modified_${formData.Name || 'DefaultFileName'}.L5X`);
 
-      // Save the modified XML to a new file
-      fs.writeFileSync(newFilePath, resultString, 'utf8');
-      console.log('Modified XML file saved:', newFilePath);
+      // // Save the modified XML to a new file
+      // fs.writeFileSync(newFilePath, resultString, 'utf8');
+      // console.log('Modified XML file saved:', newFilePath);
 
       // Send a response back to the client
-      res.send('Form data processed successfully');
+      
     });
   } catch (error) {
     console.error('Error processing the form data:', error);

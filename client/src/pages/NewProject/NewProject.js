@@ -70,7 +70,7 @@ const NewProject = () => {
         ...NewProjectObject,
         ...foundController,
       };
-     console.log("out-1", NewProjectFinalObject);
+     //console.log("out-1-Form-CMPL5480", NewProjectFinalObject);
       //console.log("Found Controller Product Code:", foundController);
     } else {
       //console.log("Controller not found in allControllers.");
@@ -82,9 +82,9 @@ const NewProject = () => {
       const formattedDate = currentDate.format("ddd MMM D HH:mm:ss YYYY");
      
       // Use the submitFormData function to send data to the server
-      const serverResponse = await submitFormData(NewProjectFinalObject);
+      const Response = await submitFormData(NewProjectFinalObject);
       // Log the response from the server
-      console.log("Server Response:", serverResponse);
+      console.log("Server Response:", Response);
       // Additional logic after successful form submission
     } catch (error) {
       // Handle errors from the server

@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { findUserByEmail, addUser,findUserByuserId } = require("../../mssql"); // Adjust the path based on your file structure
+const { findUserByEmail, addUser,findUserByuserId,addUserfile } = require("../../mssql"); // Adjust the path based on your file structure
 const authMiddleware = require("../../middleware/authMiddleware");
 
 // Login
@@ -96,7 +96,7 @@ router.post("/register", async (req, res) => {
 // Protected route
 router.get("/get-current-user", authMiddleware, async (req, res) => {
   try {
-    console.log("at getuser",req.body);
+    //console.log("at getuser",req.body);
 
     const user = await findUserByuserId(req.body.userId); // Assuming findUserByEmail can also find by ID
     

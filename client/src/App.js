@@ -7,6 +7,7 @@ import Register from "./pages/Register/Register"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ProtecdRoute from "./components/protecdRoute";
+import MainHome from "./pages/Home";
 
 function App() {
   return (
@@ -21,13 +22,14 @@ function App() {
             path="/"
             element={
               <ProtecdRoute>
-                <NewProject />
+                {/* <NewProject /> */}
+                <MainHome/>
               </ProtecdRoute>
             }
           />
 
           <Route path ="/lorem" element ={<Home/>} />
-          <Route path="/dashboard" element={<Homepage/>} />
+          {/* <Route path="/dashboard" element={<Homepage/>} /> */}
           <Route path ="/login" element={<Login/>}/>
           <Route path ="/register" element={<Register/>}/>
 

@@ -10,9 +10,12 @@ const config = {
   },
 };
 
+// Create a pool that connects to the database
+const pool = new sql.ConnectionPool(config);
+
 async function connectToDatabase() {
   try {
-    await sql.connect(config);
+    await pool.connect();
     console.log('Connected to SQL Server');
   } catch (err) {
     console.error('Error connecting to SQL Server:', err);
@@ -24,7 +27,7 @@ async function findUserByEmail(email) {
   try {
     await connectToDatabase();
 
-    const result = await sql.query`SELECT * FROM Users WHERE email = ${email}`;
+    const result = await pool.query`SELECT * FROM Users WHERE email = ${email}`;
 
     if (result.recordset.length > 0) {
       const user = result.recordset[0];
@@ -38,15 +41,16 @@ async function findUserByEmail(email) {
     console.error('Error finding user by email:', err);
     throw err;
   } finally {
-    await sql.close();
+    await pool.close();
     console.log('Disconnected from SQL Server');
   }
 }
+
 async function findUserByuserId(userId) {
   try {
     await connectToDatabase();
 
-    const result = await sql.query`SELECT * FROM Users WHERE userId = ${userId}`;
+    const result = await pool.query`SELECT * FROM Users WHERE userId = ${userId}`;
 
     if (result.recordset.length > 0) {
       const user = result.recordset[0];
@@ -60,16 +64,17 @@ async function findUserByuserId(userId) {
     console.error('Error finding user by email:', err);
     throw err;
   } finally {
-    await sql.close();
+    await pool.close();
     console.log('Disconnected from SQL Server');
   }
 }
+
 async function addUser(newUser) {
   try {
     await connectToDatabase();
 
     // Insert a new user into the Users table
-    const result = await sql.query`
+    const result = await pool.query`
       INSERT INTO Users (email, password, name)
       VALUES (${newUser.email}, ${newUser.password}, ${newUser.name})
     `;
@@ -85,14 +90,69 @@ async function addUser(newUser) {
     console.error('Error adding user:', err);
     throw err;
   } finally {
-    await sql.close();
+    await pool.close();
     console.log('Disconnected from SQL Server');
   }
 }
+
+async function addUserfile(data) {
+  try {
+    await connectToDatabase();
+
+    const query = `
+      INSERT INTO UserFiles (userId, filename, timestamp, fileContent)
+      VALUES (@userId, @filename, @timestamp, CAST(@fileContent AS VARBINARY(MAX)))
+    `;
+
+    const result = await pool.request()
+      .input('userId', data.userId)
+      .input('filename', data.filename)
+      .input('timestamp', data.timestamp)
+      .input('fileContent', data.fileContent)
+      .query(query);
+
+    
+    
+      if (result.rowsAffected > 0) {
+        console.log('User Files added successfully');
+        return true;
+      } else {
+        console.log('Failed to add Files to user');
+        return false;
+      }
+  } catch (error) {
+    throw new Error(`Error adding user file: ${error.message}`);
+  } finally {
+    await pool.close();
+    console.log('Disconnected from SQL Server');
+  }
+}
+
+async function getUserFilesByUserId(userId) {
+  try {
+    await connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input('userId', userId)
+      .query('SELECT * FROM UserFiles WHERE userId = @userId');
+
+    return result.recordset;
+  } catch (error) {
+    console.error('Error fetching user files:', error);
+    throw error;
+  } finally {
+    await pool.close();
+    console.log('Disconnected from SQL Server');
+  }
+}
+
 
 module.exports = {
   connectToDatabase,
   findUserByEmail,
   addUser,
-  findUserByuserId
+  findUserByuserId,
+  addUserfile,
+  getUserFilesByUserId
 };

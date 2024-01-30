@@ -1,13 +1,15 @@
-import axios from "axios";
+import axios from './index';
 
-const serverBaseUrl = "http://localhost:5000"; // Update with your server's base URL
 
-export const submitFormData = async (formData) => {
+export const submitFormData = async (payload) => {
   try {
-    const response = await axios.post(
-      `${serverBaseUrl}/newprojectCML5480`,
-      formData
-    );
+    // const response = await axios.post(
+    //   `${serverBaseUrl}/newprojectCML5480`,
+    //   formData
+    // );
+
+    const response = await axios.post("/newprojectCML5480",payload);
+    
     return response.data;
   } catch (error) {
     // Handle the error (e.g., log it or display a user-friendly message)
