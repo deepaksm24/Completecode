@@ -1,24 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Link, useNavigate } from "react-router-dom";
-import { Registeruser } from "../../api/users";
-import { message } from "antd";
-
+import { Link } from "react-router-dom";
+ 
 const Register = () => {
-  const navigate = useNavigate()
-
-  const handleSubmit = async (values) => {
-    const response = await Registeruser(values);
-    if (response.success) {
-
-      message.success(response.message);
-      navigate("/");
-    }else {
-      message.error(response.message);
-    }
+  const handleSubmit = (values) => {
+    // Handle form submission logic here
+    console.log(values);
   };
-
+ 
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -28,26 +18,15 @@ const Register = () => {
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
-      email: Yup.string()
-        .email("Invalid email address")
-        .required("Email is required"),
-      password: Yup.string()
-        .required("Password is required")
-        .matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
-          "Password must contain at least 8 characters, one lowercase letter, one uppercase letter, and one number"
-        ),
+      email: Yup.string().email("Invalid email address").required("Email is required"),
+      password: Yup.string().required("Password is required"),
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Confirm Password is required"),
     }),
     onSubmit: handleSubmit,
   });
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      navigate("/");
-    }
-  }, []);
+ 
   return (
     <section className="vh-100 gradient-custom">
       <div className="container py-5 h-100">
@@ -64,7 +43,8 @@ const Register = () => {
                     <p className="text-white-50 mb-5">
                       Please enter your details
                     </p>
-
+ 
+                    {/* Name Field */}
                     <div className="form-outline form-white mb-4">
                       <input
                         type="text"
@@ -74,18 +54,17 @@ const Register = () => {
                             ? "is-invalid"
                             : ""
                         }`}
+                        placeholder="Name"
                         {...formik.getFieldProps("name")}
                       />
-                      <label className="form-label" htmlFor="typeName">
-                        Name
-                      </label>
                       {formik.errors.name && formik.touched.name && (
                         <div className="invalid-feedback">
                           {formik.errors.name}
                         </div>
                       )}
                     </div>
-
+ 
+                    {/* Email Field */}
                     <div className="form-outline form-white mb-4">
                       <input
                         type="email"
@@ -95,18 +74,17 @@ const Register = () => {
                             ? "is-invalid"
                             : ""
                         }`}
+                        placeholder="Email"
                         {...formik.getFieldProps("email")}
                       />
-                      <label className="form-label" htmlFor="typeEmailX">
-                        Email
-                      </label>
                       {formik.errors.email && formik.touched.email && (
                         <div className="invalid-feedback">
                           {formik.errors.email}
                         </div>
                       )}
                     </div>
-
+ 
+                    {/* Password Field */}
                     <div className="form-outline form-white mb-4">
                       <input
                         type="password"
@@ -116,18 +94,17 @@ const Register = () => {
                             ? "is-invalid"
                             : ""
                         }`}
+                        placeholder="Password"
                         {...formik.getFieldProps("password")}
                       />
-                      <label className="form-label" htmlFor="typePasswordX">
-                        Password
-                      </label>
                       {formik.errors.password && formik.touched.password && (
                         <div className="invalid-feedback">
                           {formik.errors.password}
                         </div>
                       )}
                     </div>
-
+ 
+                    {/* Confirm Password Field */}
                     <div className="form-outline form-white mb-4">
                       <input
                         type="password"
@@ -138,14 +115,9 @@ const Register = () => {
                             ? "is-invalid"
                             : ""
                         }`}
+                        placeholder="Confirm Password"
                         {...formik.getFieldProps("confirmPassword")}
                       />
-                      <label
-                        className="form-label"
-                        htmlFor="typeConfirmPassword"
-                      >
-                        Confirm Password
-                      </label>
                       {formik.errors.confirmPassword &&
                         formik.touched.confirmPassword && (
                           <div className="invalid-feedback">
@@ -153,7 +125,7 @@ const Register = () => {
                           </div>
                         )}
                     </div>
-
+ 
                     <button
                       className="btn btn-outline-light btn-lg px-5"
                       type="submit"
@@ -162,11 +134,11 @@ const Register = () => {
                     </button>
                   </div>
                 </form>
-
+ 
                 <div>
-                  <Link to="/login">
-                    <div className="text-white">
-                      Already have an account? Login
+                <Link to="/login" style={{ textDecoration: 'none' }}>
+                   <div className="text-white">
+                  Already have an account? <span style={{ fontFamily: 'your-chosen-font', fontSize: 'your-chosen-size', fontWeight: 'your-chosen-weight' }}>Login</span>
                     </div>
                   </Link>
                 </div>
@@ -178,5 +150,5 @@ const Register = () => {
     </section>
   );
 };
-
+ 
 export default Register;

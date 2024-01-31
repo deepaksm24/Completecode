@@ -69,7 +69,7 @@ const Login = () => {
                     <p className="text-white-50 mb-5">
                       Please enter your login and password!
                     </p>
-
+ 
                     <div className="form-outline form-white mb-4">
                       <input
                         type="email"
@@ -79,18 +79,16 @@ const Login = () => {
                             ? "is-invalid"
                             : ""
                         }`}
+                        placeholder="Email"
                         {...formik.getFieldProps("email")}
                       />
-                      <label className="form-label" htmlFor="typeEmailX">
-                        Email
-                      </label>
                       {formik.errors.email && formik.touched.email && (
                         <div className="invalid-feedback">
                           {formik.errors.email}
                         </div>
                       )}
                     </div>
-
+ 
                     <div className="form-outline form-white mb-4">
                       <input
                         type="password"
@@ -100,24 +98,25 @@ const Login = () => {
                             ? "is-invalid"
                             : ""
                         }`}
+                        placeholder="Password"
                         {...formik.getFieldProps("password")}
                       />
-                      <label className="form-label" htmlFor="typePasswordX">
-                        Password
-                      </label>
                       {formik.errors.password && formik.touched.password && (
                         <div className="invalid-feedback">
                           {formik.errors.password}
                         </div>
                       )}
                     </div>
-
-                    <p className="small mb-5 pb-lg-2">
-                      <a className="text-white-50" href="#!">
-                        Forgot password?
-                      </a>
-                    </p>
-
+ 
+                    <div className="small mb-5 pb-lg-2">
+                    <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
+                    <div className="text-white register-link">
+                    Forgot Password <span style={{ fontFamily: 'your-chosen-font', fontSize: 'your-font-size' }}>?</span>
+                    </div>
+                  </Link>
+                    </div>
+                   
+ 
                     <button
                       className="btn btn-outline-light btn-lg px-5"
                       type="submit"
@@ -126,11 +125,11 @@ const Login = () => {
                     </button>
                   </div>
                 </form>
-
+ 
                 <div>
-                  <Link to="/register">
-                    <div className="text-white">
-                      Don't have an Account? Register
+                <Link to="/register" style={{ textDecoration: 'none' }}>
+                    <div className="text-white register-link">
+                    Don't have an Account? <span style={{ fontFamily: 'your-chosen-font', fontSize: 'your-font-size' }}>Register</span>
                     </div>
                   </Link>
                 </div>
@@ -142,5 +141,5 @@ const Login = () => {
     </section>
   );
 };
-
+ 
 export default Login;
