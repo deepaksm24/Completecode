@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { DownOutlined } from '@ant-design/icons';
 import LeftPanel from './LeftPanel';
 import RightPanel from './Rightpanel';
 
@@ -28,7 +27,7 @@ const Home = () => {
       info.node.parent.title.props.children &&
       info.node.parent.title.props.children[1];
   
-    console.log('Immediate parent node title:', parentTitle);
+    //console.log('Immediate parent node title:', parentTitle);
   
     // Extract title from the React element
     const title =

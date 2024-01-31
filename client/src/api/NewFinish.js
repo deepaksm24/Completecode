@@ -17,3 +17,4 @@ export const submitFormData = async (payload) => {
     throw error; // Re-throw the error if you want to handle it in the calling code
   }
 };
+

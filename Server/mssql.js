@@ -142,10 +142,32 @@ async function getUserFilesByUserId(userId) {
     console.error('Error fetching user files:', error);
     throw error;
   } finally {
-    await pool.close();
+    // Do not close the pool here
     console.log('Disconnected from SQL Server');
   }
 }
+
+const getFilePathByFileId = async (fileId) => {
+  try {
+    await connectToDatabase();
+
+    const result = await pool
+      .request()
+      .input('fileId', fileId)
+      .query('SELECT filecontent FROM UserFiles WHERE FileId = @fileId');
+
+    return result.recordset[0].filecontent;
+  } catch (error) {
+    console.error('Error fetching file path by fileId:', error);
+    throw error;
+  } finally {
+    console.log('Disconnected from SQL Server');
+  }
+};
+
+
+
+
 
 
 module.exports = {
@@ -154,5 +176,6 @@ module.exports = {
   addUser,
   findUserByuserId,
   addUserfile,
-  getUserFilesByUserId
+  getUserFilesByUserId,
+  getFilePathByFileId
 };

@@ -1,19 +1,11 @@
-const express = require("express");
-const router = express.Router();
-const fs = require("fs");
-const path = require("path");
-const xml2js = require("xml2js");
-const authMiddleware = require("../../middleware/authMiddleware");
-const {
-  findUserByuserId,
-  addUserfile,
-} = require("../../mssql"); // Adjust the path based on your file structure
+const fs = require('fs');
+const path = require('path');
+const xml2js = require('xml2js');
+const { addUserfile } = require('./userFileService'); // Assuming you have a service for interacting with the database
 
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const formData = req.body;
-    const user = await findUserByuserId(req.body.userId); // Assuming findUserByuserId can also find by ID
-    const userEmail = user.email;
 
     // Original XML file path
     const originalFilePath =
@@ -90,20 +82,19 @@ router.post("/", authMiddleware, async (req, res) => {
       const resultString = xmlOutput;
 
       // New folder path
-      const userFolderPath = path.join("D:\\SERVERFILES", userEmail);
+      const userFolderPath = path.join("D:\\SERVERFILES", formData.userEmail);
+
+      // Create a folder with the user's email address if it doesn't exist
       if (!fs.existsSync(userFolderPath)) {
         fs.mkdirSync(userFolderPath);
       }
 
       // New XML file path within the user's folder
-      const newFilePath = path.join(
-        userFolderPath,
-        `${formData.Name || "DefaultFileName"}.L5X`
-      );
+      const newFilePath = path.join(userFolderPath, `Modified_${formData.Name || 'DefaultFileName'}.L5X`);
 
       // Save the modified XML to a new file
-      fs.writeFileSync(newFilePath, resultString, "utf8");
-      console.log("Modified XML file saved:", newFilePath);
+      fs.writeFileSync(newFilePath, resultString, 'utf8');
+      console.log('Modified XML file saved:', newFilePath);
 
       try {
         // Save the file path to Microsoft SQL Server
@@ -136,5 +127,3 @@ router.post("/", authMiddleware, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
-module.exports = router;
